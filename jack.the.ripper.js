@@ -7,6 +7,8 @@ var utils = require('utils');
 */
 
 var _url = "https://www.vfiles.com/vfiles/835";
+var _parts = _url.split("/");
+var _path = _parts[_parts.length-1];
 
 function pad(num, size) {
     var s = num+"";
@@ -18,6 +20,8 @@ system.stdout.write('url to rip: ');
 var new_url = system.stdin.readLine();
 if( new_url != "" ) {
 	_url = new_url;
+	_parts = _url.split("/");
+	_path = _parts[_parts.length-1];
 }
 
 casper.echo( "scraping site for image URLS..." );
@@ -55,7 +59,7 @@ casper.start(_url,function() {
 		}
 
 		for (var i = 0; i < img_urls.length; i++) {
-			this.download( img_urls[i], "cool_"+pad(i,3)+".png" );
+			this.download( img_urls[i], "./"+_path+"/cool_"+pad(i,3)+".png" );
 		}
 	});
 
