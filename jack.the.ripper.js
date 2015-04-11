@@ -1,14 +1,12 @@
-var utils = require('utils');
 var casper = require('casper').create();
-
+var system = require('system');
+var utils = require('utils');
 /*
 	https://www.vfiles.com/vfiles/835
 	http://imgserv.vfiles.com/api/file/mc5wECu7QT6JZW8GUqCw
 */
 
-var _img_test = "http://imgserv.vfiles.com/api/file/mc5wECu7QT6JZW8GUqCw";
-
-var _url = casper.cli.get("url");
+var _url = "https://www.vfiles.com/vfiles/835";
 
 function pad(num, size) {
     var s = num+"";
@@ -16,25 +14,56 @@ function pad(num, size) {
     return s;
 }
 
-casper.start(_url, function() {
-	this.echo(this.getTitle());
+system.stdout.write('url to rip: ');
+var new_url = system.stdin.readLine();
+if( new_url != "" ) {
+	_url = new_url;
+}
 
-	var img_selector = 'img[class="ng-scope"]';
-	var imgs = this.getElementsInfo(img_selector); // an array of object literals
+casper.echo( "scraping site for image URLS..." );
 
-	var img_urls = [];
-	for (var i = 0; i < imgs.length; i++) {
-		var src = imgs[i].attributes.src;
-		var parts = src.split("?");
+casper.start(_url,function() {
+	casper.then(function() {
+		casper.repeat( 5, function(){
+			casper.then(function(){
+				casper.scrollToBottom();
+			});
 
-		img_urls.push(parts[0]);
-	}
+			casper.then(function(){
+				casper.wait( 1000 );
 
-	utils.dump(img_urls);
+				var img_selector = 'img[class="ng-scope"]';
+				var imgs = this.getElementsInfo(img_selector);
 
-	for (var i = 0; i < img_urls.length; i++) {
-		this.download( img_urls[i], "cool_"+pad(i,3)+".png" );
-	}
+				casper.echo("found " + imgs.length + " images!" );
+			});
+		});
+	});
+
+	casper.then(function() {
+		casper.echo( "downloading..." );
+
+		var img_selector = 'img[class="ng-scope"]';
+		var imgs = this.getElementsInfo(img_selector);
+
+		var img_urls = [];
+		for (var i = 0; i < imgs.length; i++) {
+			var src = imgs[i].attributes.src;
+			var parts = src.split("?");
+
+			img_urls.push(parts[0]);
+		}
+
+		for (var i = 0; i < img_urls.length; i++) {
+			this.download( img_urls[i], "cool_"+pad(i,3)+".png" );
+		}
+	});
+
+	casper.then(function(){
+		casper.echo( "done." );
+	});
 });
 
-casper.run();
+casper.run(function(){
+	casper.exit();
+});
