@@ -28,54 +28,40 @@ casper.echo( "scraping site for image URLS..." );
 
 casper.start(_url,function() {
 	casper.then(function() {
+		casper.repeat( 5, function(){
+			casper.then(function(){
+				casper.scrollToBottom();
+			});
 
-		// casper.repeat( 5, function(){
-		// 	casper.then(function(){
-		// 		casper.scrollToBottom();
-		// 	});
+			casper.then(function() {
+				casper.wait( 1000 );
 
-		// 	casper.then(function() {
-		// 		casper.wait( 1000 );
+				var img_selector = 'img[class="ng-scope"]';
+				var imgs = this.getElementsInfo(img_selector);
 
-		// 		var img_selector = 'img[class="ng-scope"]';
-		// 		var imgs = this.getElementsInfo(img_selector);
-
-		// 		casper.echo("found " + imgs.length + " images!" );
-		// 	});
-		// });
-
-		var count = 0;
-		while( count < 10 ) {
-			casper.scrollToBottom();
-			casper.wait( 1000 );
-
-			var img_selector = 'img[class="ng-scope"]';
-			var imgs = this.getElementsInfo(img_selector);
-			
-			count = imgs.length;
-		}
-
-		casper.echo(count);
+				casper.echo("found " + imgs.length + " images!" );
+			});
+		});
 	});
 
-	// casper.then(function() {
-	// 	casper.echo( "downloading..." );
+	casper.then(function() {
+		casper.echo( "downloading..." );
 
-	// 	var img_selector = 'img[class="ng-scope"]';
-	// 	var imgs = this.getElementsInfo(img_selector);
+		var img_selector = 'img[class="ng-scope"]';
+		var imgs = this.getElementsInfo(img_selector);
 
-	// 	var img_urls = [];
-	// 	for (var i = 0; i < imgs.length; i++) {
-	// 		var src = imgs[i].attributes.src;
-	// 		var parts = src.split("?");
+		var img_urls = [];
+		for (var i = 0; i < imgs.length; i++) {
+			var src = imgs[i].attributes.src;
+			var parts = src.split("?");
 
-	// 		img_urls.push(parts[0]);
-	// 	}
+			img_urls.push(parts[0]);
+		}
 
-	// 	for (var i = 0; i < img_urls.length; i++) {
-	// 		this.download( img_urls[i], "./"+_path+"/cool_"+pad(i,3)+".png" );
-	// 	}
-	// });
+		for (var i = 0; i < img_urls.length; i++) {
+			this.download( img_urls[i], "./"+_path+"/cool_"+pad(i,3)+".png" );
+		}
+	});
 
 	casper.then(function(){
 		casper.echo( "done." );
