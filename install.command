@@ -18,4 +18,8 @@ mkdir NODEJS
 
 cd NODEJS
 
-curl -fsSL https://raw.githubusercontent.com/chrisallick/JackTheRipper/master/jack.the.ripper.js >> jack.the.ripper.js
+mkdir jackthestripper
+
+cd jackthestripper
+
+curl -fsSL https://raw.githubusercontent.com/chrisallick/JackTheStripper/master/jack.the.stripper.js >> jack.the.stripper.js
